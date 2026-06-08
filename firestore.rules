@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Admin helper
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Only designated Admin has write access to system configurations
+    function isAdmin() {
+      // For this app, we will allow read/write admin actions via server side proxy 
+      // or check if request.auth.token.email is verified and belongs to the owner.
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == "asasyyousef@gmail.com"
+      );
+    }
+
+    // Shipping Providers
+    match /shipping_providers/{providerId} {
+      // Any authenticated user/mudhaddith can read shipping providers configuration templates
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Users (Mudhadditheen)
+    match /users/{userId} {
+      // Users can read if authenticated (as requested), and write only if Admin
+      allow read: if isSignedIn() || isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
+    }
+    
+    // Activity Logs
+    match /activity_logs/{logId} {
+      // Only administrators can read activity logs; any authenticated user can write logs
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+    }
+    
+    // Admin list
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

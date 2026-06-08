@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "shipping_provider": {
+      "title": "Shipping Provider Template",
+      "description": "API configuration and selectors for a shipping company, defined solely by the Admin template",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier (e.g. hawk, jood, shaya)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Public name of the provider"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["parent", "source"],
+          "description": "Determines if this is a parent tracking system (like Hawk) or a source logs system (like Jood/Shaya)"
+        },
+        "loginUrl": {
+          "type": "string",
+          "description": "Authentication URL for login endpoint"
+        },
+        "searchUrl": {
+          "type": "string",
+          "description": "Standard query search/filter URL"
+        },
+        "loginCheck": {
+          "type": "string",
+          "description": "Response content check parameter confirming successful login"
+        },
+        "rowSelector": {
+          "type": "string",
+          "description": "CSS HTML selector used by Cheerio to target lists of orders"
+        },
+        "idWaslSelector": {
+          "type": "string",
+          "description": "Selector/index specification used to extract tracking number"
+        },
+        "sequenceSelector": {
+          "type": "string",
+          "description": "Selector/index specification used to extract sequencing text"
+        },
+        "columns": {
+          "type": "array",
+          "description": "Expected structured headers column indices for matched tabular scraping"
+        }
+      },
+      "required": ["id", "name", "type", "loginUrl", "searchUrl", "loginCheck"]
+    },
+    "user_config": {
+      "title": "User Configurations",
+      "description": "User profile with default credentials and linked providers",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Unique user ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Internal mudhaddith platform username"
+        },
+        "password": {
+          "type": "string",
+          "description": "Mudhaddith encrypted or simple password"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "mudhaddith"],
+          "description": "Role privileges"
+        },
+        "parentProviderId": {
+          "type": "string",
+          "description": "Default parent provider link ID"
+        },
+        "sourceProviderIds": {
+          "type": "array",
+          "description": "Array of strings referencing enabled source company templates"
+        },
+        "parentCredentials": {
+          "type": "object",
+          "description": "Credentials for logging into default parent provider (username/password)"
+        },
+        "sourceCredentials": {
+          "type": "object",
+          "description": "Mapped credentials for logging into the active sources"
+        }
+      },
+      "required": ["uid", "username", "password", "role", "parentProviderId", "sourceProviderIds"]
+    },
+    "activity_log": {
+      "title": "Activity Logs",
+      "description": "Historical audit logs tracking updating user actions and scraping status",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the user performing the action"
+        },
+        "username": {
+          "type": "string",
+          "description": "Platform username of the user performing the action"
+        },
+        "action": {
+          "type": "string",
+          "description": "General description/name of the action"
+        },
+        "details": {
+          "type": "string",
+          "description": "Dynamic contextual parameters or results of the action"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of when the action occurred"
+        }
+      },
+      "required": ["userId", "username", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/shipping_providers/{providerId}": {
+      "schema": "shipping_provider",
+      "description": "Global templates for corporate providers managed solely by Admin"
+    },
+    "/users/{userId}": {
+      "schema": "user_config",
+      "description": "User account configurations and provider assignments"
+    },
+    "/activity_logs/{logId}": {
+      "schema": "activity_log",
+      "description": "Audit trails and live transaction logs of platform users"
+    }
+  }
+}

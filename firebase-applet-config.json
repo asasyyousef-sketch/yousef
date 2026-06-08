@@ -1,0 +1,10 @@
+{
+  "projectId": "motabiq",
+  "appId": "1:1052964127790:web:178d0ede003bf242d24bbf",
+  "apiKey": "AIzaSyC8mITBxHteWolLEuTpEKF-PMsKZhvdyWw",
+  "authDomain": "motabiq.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "motabiq.firebasestorage.app",
+  "messagingSenderId": "1052964127790",
+  "measurementId": ""
+}
